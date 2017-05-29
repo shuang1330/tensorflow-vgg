@@ -43,39 +43,93 @@ class Vgg16:
         ])
         assert bgr.get_shape().as_list()[1:] == [224, 224, 3]
 
-        self.conv1_1 = self.conv_layer(bgr, "conv1_1")
-        self.conv1_2 = self.conv_layer(self.conv1_1, "conv1_2")
-        self.pool1 = self.max_pool(self.conv1_2, 'pool1')
+        self.collection = []
 
-        self.conv2_1 = self.conv_layer(self.pool1, "conv2_1")
-        self.conv2_2 = self.conv_layer(self.conv2_1, "conv2_2")
-        self.pool2 = self.max_pool(self.conv2_2, 'pool2')
+        self.prob = self.conv_layer(bgr, "conv1_1")
+        self.collection.append(self.prob)
+        self.prob = self.conv_layer(self.prob, "conv1_2")
+        self.collection.append(self.prob)
+        self.prob = self.max_pool(self.prob, 'pool1')
 
-        self.conv3_1 = self.conv_layer(self.pool2, "conv3_1")
-        self.conv3_2 = self.conv_layer(self.conv3_1, "conv3_2")
-        self.conv3_3 = self.conv_layer(self.conv3_2, "conv3_3")
-        self.pool3 = self.max_pool(self.conv3_3, 'pool3')
+        self.prob = self.conv_layer(self.prob, "conv2_1")
+        self.collection.append(self.prob)
+        self.prob = self.conv_layer(self.prob, "conv2_2")
+        self.collection.append(self.prob)
+        self.prob = self.max_pool(self.prob, 'pool2')
 
-        self.conv4_1 = self.conv_layer(self.pool3, "conv4_1")
-        self.conv4_2 = self.conv_layer(self.conv4_1, "conv4_2")
-        self.conv4_3 = self.conv_layer(self.conv4_2, "conv4_3")
-        self.pool4 = self.max_pool(self.conv4_3, 'pool4')
+        self.prob = self.conv_layer(self.prob, "conv3_1")
+        self.collection.append(self.prob)
+        self.prob = self.conv_layer(self.prob, "conv3_2")
+        self.collection.append(self.prob)
+        self.prob = self.conv_layer(self.prob, "conv3_3")
+        self.collection.append(self.prob)
+        self.prob = self.max_pool(self.prob, 'pool3')
 
-        self.conv5_1 = self.conv_layer(self.pool4, "conv5_1")
-        self.conv5_2 = self.conv_layer(self.conv5_1, "conv5_2")
-        self.conv5_3 = self.conv_layer(self.conv5_2, "conv5_3")
-        self.pool5 = self.max_pool(self.conv5_3, 'pool5')
+        self.prob = self.conv_layer(self.prob, "conv4_1")
+        self.collection.append(self.prob)
+        self.prob = self.conv_layer(self.prob, "conv4_2")
+        self.collection.append(self.prob)
+        self.prob = self.conv_layer(self.prob, "conv4_3")
+        self.collection.append(self.prob)
+        self.prob = self.max_pool(self.prob, 'pool4')
 
-        self.fc6 = self.fc_layer(self.pool5, "fc6")
-        assert self.fc6.get_shape().as_list()[1:] == [4096]
-        self.relu6 = tf.nn.relu(self.fc6)
+        self.prob = self.conv_layer(self.prob, "conv5_1")
+        self.collection.append(self.prob)
+        self.prob = self.conv_layer(self.prob, "conv5_2")
+        self.collection.append(self.prob)
+        self.prob = self.conv_layer(self.prob, "conv5_3")
+        self.collection.append(self.prob)
+        self.prob = self.max_pool(self.prob, 'pool5')
 
-        self.fc7 = self.fc_layer(self.relu6, "fc7")
-        self.relu7 = tf.nn.relu(self.fc7)
+        self.prob = self.fc_layer(self.prob, "fc6")
+        assert self.prob.get_shape().as_list()[1:] == [4096]
+        self.prob = tf.nn.relu(self.prob)
 
-        self.fc8 = self.fc_layer(self.relu7, "fc8")
+        self.prob = self.fc_layer(self.prob, "fc7")
+        self.prob = tf.nn.relu(self.prob)
 
-        self.prob = tf.nn.softmax(self.fc8, name="prob")
+        self.prob = self.fc_layer(self.prob, "fc8")
+
+        self.prob = tf.nn.softmax(self.prob, name="prob")
+
+        # self.conv1_1 = self.conv_layer(bgr, "conv1_1")
+        # self.conv1_2 = self.conv_layer(self.conv1_1, "conv1_2")
+        # self.pool1 = self.max_pool(self.conv1_2, 'pool1')
+        #
+        # self.conv2_1 = self.conv_layer(self.pool1, "conv2_1")
+        # self.conv2_2 = self.conv_layer(self.conv2_1, "conv2_2")
+        # self.pool2 = self.max_pool(self.conv2_2, 'pool2')
+        #
+        # self.conv3_1 = self.conv_layer(self.pool2, "conv3_1")
+        # self.conv3_2 = self.conv_layer(self.conv3_1, "conv3_2")
+        # self.conv3_3 = self.conv_layer(self.conv3_2, "conv3_3")
+        # self.pool3 = self.max_pool(self.conv3_3, 'pool3')
+        #
+        # self.conv4_1 = self.conv_layer(self.pool3, "conv4_1")
+        # self.conv4_2 = self.conv_layer(self.conv4_1, "conv4_2")
+        # self.conv4_3 = self.conv_layer(self.conv4_2, "conv4_3")
+        # self.pool4 = self.max_pool(self.conv4_3, 'pool4')
+        #
+        # self.conv5_1 = self.conv_layer(self.pool4, "conv5_1")
+        # self.conv5_2 = self.conv_layer(self.conv5_1, "conv5_2")
+        # self.conv5_3 = self.conv_layer(self.conv5_2, "conv5_3")
+        # self.pool5 = self.max_pool(self.conv5_3, 'pool5')
+        #
+        # self.fc6 = self.fc_layer(self.pool5, "fc6")
+        # assert self.fc6.get_shape().as_list()[1:] == [4096]
+        # self.relu6 = tf.nn.relu(self.fc6)
+        #
+        # self.fc7 = self.fc_layer(self.relu6, "fc7")
+        # self.relu7 = tf.nn.relu(self.fc7)
+        #
+        # self.fc8 = self.fc_layer(self.relu7, "fc8")
+        #
+        # self.collection = (self.conv1_1,self.conv1_2,self.conv2_1,self.conv2_2,
+        #                    self.conv3_1,self.conv3_2,self.conv3_3,self.conv4_1,
+        #                    self.conv4_2,self.conv4_3,self.conv5_1,self.conv5_2,
+        #                    self.conv5_3)
+        #
+        # self.prob = tf.nn.softmax(self.fc8, name="prob")
 
         self.data_dict = None
         print(("build model finished: %ds" % (time.time() - start_time)))
